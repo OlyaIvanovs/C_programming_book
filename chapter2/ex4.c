@@ -8,15 +8,28 @@ void squeeze(char s1[], char s2[]);
 int main()
 {
     char s1[MAXLINE] = "The staccndart library includes a portable implementation of a pseudo-random number generator";
-    char s2[MAXLINE] = "abc";
+    char s2[MAXLINE] = "abcaasa";
 
     squeeze(s1, s2);
     printf("%s", s1);
 
 }
 
+void squeeze(char s1[], char s2[]) {
+  int i, j, k;
 
-void squeeze(char s1[], char s2[])
+  for (i = 0; s2[i] != '\0'; ++i) {
+    for (k = j = 0; s1[k] != '\0'; ++k) {
+      if (s1[k] != s2[i]) {
+        s1[j++] = s1[k];
+      } 
+    }
+    s1[j] = '\0';
+  }
+}
+
+
+void squeeze2(char s1[], char s2[])
 {
     int k = 0;
     int next_character;
