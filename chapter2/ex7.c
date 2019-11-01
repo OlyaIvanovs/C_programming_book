@@ -14,8 +14,14 @@ int main() {
 }
 
 
+// unsigned invert(unsigned x, int p, int n)
+// {
+//     unsigned y = x;
+//     return ((~((~((~(unsigned int)0 << (32 - n)) >> (32 - p - n))) & (~x))) & (~(((y << (32 - p - n)) >> (32 - n)) << p)));
+// }
+
+/* second option */
 unsigned invert(unsigned x, int p, int n)
 {
-    unsigned y = x;
-    return ((~((~((~(unsigned int)0 << (32 - n)) >> (32 - p - n))) & (~x))) & (~(((y << (32 - p - n)) >> (32 - n)) << p)));
+    return (~((~((~(unsigned int)0 << (32 - n)) >> (32 - p - n))))) ^ x; // Mask 01111000
 }
