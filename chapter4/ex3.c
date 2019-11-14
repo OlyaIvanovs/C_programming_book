@@ -12,6 +12,9 @@ void push(double);
 double pop(void);
 int getch(void);
 void ungetch(int);
+double gettopelement(void);
+void duplicatetop(void);
+void swaptopelements(void);
 
 int sp = 0; /* next free stack position */ 
 double val[MAXVAL];
@@ -66,15 +69,68 @@ int main()
                 break;
         }
     }
+    
+    gettopelement();
+    duplicatetop();
+    swaptopelements();
+
+    /* print all elements of the stack */
+    for (int i = 0; i < sp; i++) {
+        printf("%g", val[i]);
+    }
 
     return 0;
 }
 
+/* Print the top element of the stack */
+double gettopelement(void)
+{
+    if (sp == 0) {
+        printf(".There is no top element. stack is empty\n");
+        return 0.0;
+    } else {
+        printf("The top element %.8g\t", val[sp - 1]);
+        return val[0];
+    }
+}
+
+/* duplicate the top element of stack */
+void duplicatetop()
+{
+    double op1 = pop();
+    push(op1);
+    push(op1);
+}
+
+
+/* swap the top two elements */
+void swaptopelements()
+{
+    double op1, op2;
+    if (sp > 1) {
+        op1 = pop();
+        op2 = pop();
+        push(op1);
+        push(op2);
+    } else {
+        printf("Operation 'swap' two elements is impossible.");
+    }
+}
+
+
+/* clear the stack */
+void clearstack()
+{
+    sp = 0;
+}
+
+
 /* push: push f onto value stack */
 void push(double f)
 {
-    if (sp < MAXVAL)
+    if (sp < MAXVAL) {
         val[sp++] = f;
+    }
     else
         printf("error: stack full; cant push %g\n", f);
 }
@@ -116,7 +172,7 @@ int getop(char s[])
     return NUMBER;
 }
 
-int getch(void) /* get a (possibly pusched back) character */
+int getch(void) /* get a (possibly pushed back) character */
 {
     return (bufp > 0) ? buf[--bufp] : getchar(); 
 }
