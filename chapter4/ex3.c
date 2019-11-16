@@ -45,7 +45,6 @@ int main()
             case VARIABLE:  // 10 A = 20 B = A B +
                 v = tolower(s[0]) - 'a';
                 push(variables[v]);
-                printf("%g ", variables[v]);
                 break;
             case MATH:
                 push(math(s, pop()));
