@@ -8,6 +8,7 @@
 #define MAXVAL 100 /* maximum depth of val stack */
 #define NUMBER '0' /* signal that a number was found */
 #define MATH '1' /* signal that a nmath function(sin, exp, pow) was found */
+#define VARIABLE '2' /* signal that a variable was found */
 #define BUFSIZE 100
 
 int getop(char []);
@@ -22,6 +23,7 @@ double math(char s[], double n);
 
 int sp = 0; /* next free stack position */ 
 double val[MAXVAL];
+double variables[26];
 char buf[BUFSIZE];
 int bufp = 0;
 
@@ -32,6 +34,7 @@ int main()
     double op2;
     double op3;
     char s[MAXOP];
+    int v;
     
 
     while ((type = getop(s)) != EOF) {
@@ -39,8 +42,16 @@ int main()
             case NUMBER:
                 push(atof(s));
                 break;
+            case VARIABLE:  // 10 A = 20 B = A B +
+                v = tolower(s[0]) - 'a';
+                push(variables[v]);
+                printf("%g ", variables[v]);
+                break;
             case MATH:
                 push(math(s, pop()));
+                break;
+            case '=':
+                variables[v] = pop();
                 break;
             case '+':
                 push(pop() + pop());
@@ -188,7 +199,9 @@ int getop(char s[])
     if (isalpha(c)) /* collect the name of math function */
         while (isalpha(s[++i] = c = getch()));
 
-    printf("%s", s);
+    if (strlen(s) == 2 && ((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z'))) {
+        return VARIABLE;
+    }
 
     s[i] = '\0';
 
