@@ -16,6 +16,7 @@ void push(double);
 double pop(void);
 int getch(void);
 void ungetch(int);
+void ungets(char []);
 double gettopelement(void);
 void duplicatetop(void);
 void swaptopelements(void);
@@ -241,4 +242,12 @@ double math(char s[], double n)
 
     printf("A function %s does not exist.", s);
     return 0.0;
+}
+
+void ungets(char s[]) 
+{
+    int i = strlen(s);
+    while (i > 0) {
+        ungetch(s[--i]);
+    }
 }
