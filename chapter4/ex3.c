@@ -173,8 +173,18 @@ int getop(char s[])
 {
     int i, c;
 
-    while ((s[0] = c = getch()) == ' ' || c == '\t' )
-        ;
+    static int ungetch = 0;
+
+    if (ungetch == 0)
+            c = getch();
+    else {
+        c = ungetch;
+        ungetch = 0;
+    }
+
+    while ((s[0] = c) == ' ' || c == '\t' )
+        c = getch();
+
     s[1] = '\0';
 
     if (!isalnum(c) && c != '.')
@@ -191,7 +201,9 @@ int getop(char s[])
         s[i] = '\0';
 
         if (c != EOF)
-        ungetch(c);
+            // ungetch(c);
+            /* version without ungetch. Use an internal static variable instead */
+            ungetch = c;
 
         return NUMBER;
     }
@@ -205,9 +217,15 @@ int getop(char s[])
 
     s[i] = '\0';
 
-    if (c != EOF)
-    ungetch(c);
+    // if (c != EOF)
+    // ungetch(c);
 
+    /* version without ungetch. Use an internal static variable instead */
+
+    if (c != EOF) {
+        ungetch = c;
+    }
+    
     return MATH;
 }
 
