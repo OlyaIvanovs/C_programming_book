@@ -21,11 +21,11 @@ int main() {
 
 /* set day of year from month and day */
 int day_of_year(int year, int month, int day) {
-    int i, leap;
+    int leap;
 
     leap = (((year%4 == 0) && (year%100 != 0)) || (year%400 == 0));
-    for (i = 1; i < month; i++)
-        day += *(*daytab + leap*13 + i);
+    while (--month > 0)
+        day += *(*daytab + leap*13 + month);
     return day;
 }
 
