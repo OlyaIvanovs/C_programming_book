@@ -51,7 +51,7 @@ int readlines(char *lineptr[], int maxlines){
 }
 
 void writelines(char *lineptr[], int nlines, int linestoprint) {
-    *lineptr = lineptr[nlines-1];
+    lineptr = &lineptr[nlines-1];
     while (linestoprint-- > 0) {
         printf("%s", *lineptr--);
     }
