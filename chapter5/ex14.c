@@ -12,6 +12,7 @@ int readlines(char *lineptr[], int nlines);
 void writelines(char *lineptr[], int nlines);
 
 void mqsort(void *lineptr[], int left, int right, int (*comp)(void *, void *));
+void reverseqsort(void *lineptr[], int left, int right, int (*comp)(void *, void *));
 int numcmp(char *, char *);
 int mstrcmp(char *, char *);
 int mgetline(char *line, int lim);
@@ -19,14 +20,22 @@ int mgetline(char *line, int lim);
 int main(int argc, char *argv[]){
     int nlines; /* number of input lines read */
     int numeric = 0; /* 1 if numeric sort */
+    int reverse = 0; /* 1 if decreasing order */
 
-    printf("%d numeric\n", numeric);
-    if (argc > 1 && mstrcmp(argv[1], "-n") == 0) {
-        numeric = 1;
-        printf("%d numeric\n", numeric);
+    while (--argc > 0) {
+        if ((*++argv)[0] == '-' && (*argv)[1] == 'n') {
+            numeric = 1;
+        } else if ((*argv)[1] == 'r') {
+            reverse = 1;
+        }
     }
+
     if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
-        mqsort((void **) lineptr, 0, nlines-1, (int (*)(void*, void*))(numeric ? numcmp : mstrcmp));
+        if (reverse == 1) {
+            reverseqsort((void **) lineptr, 0, nlines-1, (int (*)(void*, void*))(numeric ? numcmp : mstrcmp));
+        } else {
+            mqsort((void **) lineptr, 0, nlines-1, (int (*)(void*, void*))(numeric ? numcmp : mstrcmp));
+        }
         writelines(lineptr, nlines);
         return 0;
     } else {
@@ -94,6 +103,26 @@ void mqsort(void *v[], int left, int right, int (*comp)(void *, void *)) {
     mqsort(v, left, last-1, comp);
     mqsort(v, last+1, right, comp);
 }
+
+
+/* sort v[left]...v[right] into decreasing order */
+void reverseqsort(void *v[], int left, int right, int (*comp)(void *, void *)) {
+    int i, last;
+    void swap(void *v[], int, int);
+
+    if (left >= right) /* do nothing if array contains fewer than two elements */
+        return;
+    swap(v, left, (left+right)/2);
+    last = left;
+    for (i = left + 1; i <= right; i++)
+        if ((*comp)(v[i], v[left]) > 0)
+            swap(v, ++last, i);
+    swap(v, left, last);
+    reverseqsort(v, left, last-1, comp);
+    reverseqsort(v, last+1, right, comp);
+}
+
+
 
 void swap(void *v[], int i, int j){
     void *temp;
