@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAXLINES 5000 /* max lines to be sorted */
 #define MAXLEN 1000 /* max length of any input line */
@@ -15,26 +16,30 @@ void mqsort(void *lineptr[], int left, int right, int (*comp)(void *, void *));
 void reverseqsort(void *lineptr[], int left, int right, int (*comp)(void *, void *));
 int numcmp(char *, char *);
 int mstrcmp(char *, char *);
+int fmstrcmp(char *, char *);
 int mgetline(char *line, int lim);
 
 int main(int argc, char *argv[]){
     int nlines; /* number of input lines read */
     int numeric = 0; /* 1 if numeric sort */
     int reverse = 0; /* 1 if decreasing order */
+    int foldcase = 0; /* 1 if fold upper and lower case together */ 
 
     while (--argc > 0) {
         if ((*++argv)[0] == '-' && (*argv)[1] == 'n') {
             numeric = 1;
         } else if ((*argv)[1] == 'r') {
             reverse = 1;
+        } else if ((*argv)[1] == 'f') {
+            foldcase = 1;
         }
     }
 
     if ((nlines = readlines(lineptr, MAXLINES)) >= 0) {
         if (reverse == 1) {
-            reverseqsort((void **) lineptr, 0, nlines-1, (int (*)(void*, void*))(numeric ? numcmp : mstrcmp));
+            reverseqsort((void **) lineptr, 0, nlines-1, (int (*)(void*, void*))(numeric ? numcmp : (foldcase ? fmstrcmp : mstrcmp)));
         } else {
-            mqsort((void **) lineptr, 0, nlines-1, (int (*)(void*, void*))(numeric ? numcmp : mstrcmp));
+            mqsort((void **) lineptr, 0, nlines-1, (int (*)(void*, void*))(numeric ? numcmp : (foldcase ? fmstrcmp : mstrcmp)));
         }
         writelines(lineptr, nlines);
         return 0;
@@ -146,10 +151,21 @@ int numcmp(char *s1, char *s2){
         return 0;
 }
 
-int mstrcmp(char *s, char *t) {
+/* case ditinctions are not made during sorting */
+int fmstrcmp(char *s, char *t) {
     int i;
 
-    for (i = 0; s[i] == t[i]; i++)
+    for (i = 0; tolower(s[i]) == tolower(t[i]); i++)
+        if (*s == '\0')
+            return 0;
+    return tolower(*s) - tolower(*t);
+}
+
+
+int mstrcmp(char *s, char *t) {
+    int i;
+    
+    for (i = 0; s[i] == t[i]; i++) 
         if (*s == '\0')
             return 0;
     return *s - *t;
